@@ -28,12 +28,8 @@ const getUserById = asyncHandler(async (req, res) => {
 })
 const getFollowsbyId = asyncHandler(async(req, res)=>{
     const {userid} = req.body;
-    console.log(req.body)
     const user = await User.findOne({userid}).select('following follower').lean().exec();
-    console.log(user)
 
-    console.log(user.follower)
-    console.log(typeof user.follower)
     const followers = await User.find({ _id: { $in: user.follower } }).lean().select('userid profile_img username').exec();
     const followings = await User.find({ _id: { $in: user.following } }).lean().select('userid profile_img username').exec();
 
@@ -43,7 +39,7 @@ const getFollowsbyId = asyncHandler(async(req, res)=>{
 const checkEmail = asyncHandler(async (req, res) => {
     const {email} = req.body
     const checkeduser = await User.findOne({email}).lean().exec()
-    console.log("email check:"+email)
+
 
     if(!email){return res.status(400).json({message:"이메일을 입력해주세요."})}
 
@@ -58,8 +54,7 @@ const checkUserid = asyncHandler(async (req, res) => {
     const {userid} = req.body
 
     const checkeduser = await User.findOne({userid}).lean().exec()
-    console.log(userid)
-    console.log(checkeduser)
+
     if(checkeduser){
         res.status(409).json({ message: '이미 존재하는 아이디입니다' })
     }else{
@@ -70,9 +65,9 @@ const checkUserid = asyncHandler(async (req, res) => {
 
 const searchUser = asyncHandler(async(req, res)=>{
     const {searchword} = req.body;
-    console.log(searchword)
+
     const users = await User.find({ userid: { $regex: `^${searchword}` } }).select('-password').lean();
-    console.log(users)
+
     if(!users){
         console.log("유저 검색 결과 없음")
         return res.status(400).json({message:"유저 검색 결과 없음"})
@@ -85,7 +80,6 @@ const searchUser = asyncHandler(async(req, res)=>{
 const createNewUser = asyncHandler(async (req, res) => {
     const { username, password, email, userid } = req.body
     // Confirm data
-    console.log(password, email, userid)
     if (!userid||!email||!password) {
         return res.status(400).json({ message: 'All fields are required' })
     }
@@ -94,7 +88,7 @@ const createNewUser = asyncHandler(async (req, res) => {
     const hashedPwd = await bcrypt.hash(password, 10) // salt rounds
 
     const userObject = { username, "password": hashedPwd, email, userid }
-    console.log(userObject)
+
 
     // Create and store new user   
     const user = await User.create(userObject)
@@ -108,9 +102,6 @@ const createNewUser = asyncHandler(async (req, res) => {
 const updateUser = asyncHandler(async(req, res)=>{
     const {email, _id, userid, password,username,follower, following} = req.body.updateduser;
 
-    console.log(userid)
-    console.log(follower)
-    console.log(following)
 
     if (!email || !_id || !userid || !password){
         console.log("모든 항목이 채워지지 않았습니다")

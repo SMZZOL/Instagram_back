@@ -5,9 +5,8 @@ const asyncHandler = require("express-async-handler");
 
 
 const login = asyncHandler(async(req, res)=>{
-    console.log(req.body)
-    console.log(req.body)
-    console.log(req.body)
+
+
     const  {email, password} = req.body;
 
     if(!email || !password){
@@ -49,7 +48,6 @@ const login = asyncHandler(async(req, res)=>{
     maxAge: 7 * 24 * 60 * 60 * 1000, //cookie expiry: set to match rT
     });
 
-    console.log(accessToken)
     // Send accessToken containing username and roles
     res.json({ accessToken });
 

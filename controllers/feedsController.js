@@ -53,15 +53,15 @@ const getAllFeeds = asyncHandler(async (req, res)=>{//로그인된 계정의 팔
 
     let feedids=[];
 
-    const followers = await User.find({_id:{$in : user.follower}}).exec();
+    const followings = await User.find({_id:{$in : user.following}}).exec();
 
-    followers.map((follower)=>{
-        feedids = [...feedids, ...follower.feeds]
+    followings.map((following)=>{
+        feedids = [...feedids, ...following.feeds]
     })
     const Feeds = await Feed.find({_id:{ $in : feedids}}).lean().exec();
 
     Feeds.map((feed)=>{
-        const {userid} = followers.find(follower=>follower._id.equals(feed.user))
+        const {userid} = followings.find(following=>following._id.equals(feed.user))
         feed.userid =userid;
     })
 
@@ -75,7 +75,6 @@ const changeLiked = asyncHandler(async (req, res)=>{
 
     const feed = await Feed.findOne({_id:feed_id}).exec();
 
-    console.log(feed.likes)
     feed.likes = feed.likes.includes(user_id)
     ?feed.likes.filter(id => !id.equals(user_id))
     :[...feed.likes, user_id]
