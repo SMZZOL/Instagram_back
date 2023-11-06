@@ -1,5 +1,6 @@
 require('dotenv').config()
 const express = require("express")
+const {logger} = require("./middleware/logger")
 const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors') 
@@ -11,10 +12,13 @@ const PORT= process.env.PORT || 3500//http://localhost:3500
 
 connectDB()
 
+app.use(logger)
+
 app.use(bodyParser.json({ limit: '3mb' })); // JSON 데이터 크기 제한 설정
 app.use(bodyParser.urlencoded({ limit: '3mb', extended: true }));
 
 app.use(express.json())//json 파일을 parsing
+
 
 app.use(cookieParser())
 
